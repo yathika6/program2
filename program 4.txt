@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int knapsack(int capacity, int weights[], int values[], int n) {
+    int i, w;
+    int **dp = (int **)malloc((n + 1) * sizeof(int *));
+    for (i = 0; i <= n; i++) {
+        dp[i] = (int *)malloc((capacity + 1) * sizeof(int));
+    }
+
+    for (i = 0; i <= n; i++) {
+        for (w = 0; w <= capacity; w++) {
+            if (i == 0 || w == 0) {
+                dp[i][w] = 0;
+            } else if (weights[i - 1] <= w) {
+                dp[i][w] = (values[i - 1] + dp[i - 1][w - weights[i - 1]] > dp[i - 1][w]) ?
+                            values[i - 1] + dp[i - 1][w - weights[i - 1]] :
+                            dp[i - 1][w];
+            } else {
+                dp[i][w] = dp[i - 1][w];
+            }
+        }
+    }
+
+    int result = dp[n][capacity];
+    
+    for (i = 0; i <= n; i++) {
+        free(dp[i]);
+    }
+    free(dp);
+
+    return result;
+}
+
+int main() {
+    int capacity = 50; 
+    int values[] = {60, 100, 120}; 
+    int weights[] = {10, 20, 30};  
+    int n = sizeof(values) / sizeof(values[0]); 
+
+    int maxValue = knapsack(capacity, weights, values, n);
+    printf("Maximum value in knapsack = %d\n", maxValue);
+
+    return 0;
+}
